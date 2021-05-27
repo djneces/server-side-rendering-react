@@ -24,7 +24,7 @@ export default (req, store) => {
   //no white space, or we get warning in the browser
   //we have to pass the store data from the server to the client (as initial state)
   //serialize protects against malicious xss attacks - this is vulnerable part, react protects, but only what renders
-  return `<html><head></head><body><div id="root">${content}</div><script>window.INITIAL_STATE = ${serialize(
+  return `<html><head><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"></head><body><div id="root">${content}</div><script>window.INITIAL_STATE = ${serialize(
     store.getState()
   )}</script><script src="bundle.js"></script></body></html>`;
 };

@@ -1,7 +1,12 @@
 import React from 'react';
 
 const Home = () => {
-  return <div onClick={() => console.log('clicked')}>Home updated</div>;
+  return (
+    <div className='center-align' style={{ marginTop: '200px' }}>
+      <h3>Welcome</h3>
+      <p>Check out these new features</p>
+    </div>
+  );
 };
 
 export default { component: Home };
