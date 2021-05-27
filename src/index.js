@@ -36,16 +36,38 @@ app.get('*', (req, res) => {
   const store = createStore(req);
 
   //looks at list of routes what the user is attempting to access and returns an array of *components to be rendered*
-  //return an array of promises of all pending network requests (from all action creators we are calling)
-  const promises = matchRoutes(Routes, req.path).map(({ route }) => {
-    //if loadData func exists -> execute
-    return route.loadData ? route.loadData(store) : null;
-  });
+  //return an array of promises of all pending network requests (from all action creators we are calling) or null
+  const promises = matchRoutes(Routes, req.path)
+    .map(({ route }) => {
+      //if loadData func exists -> execute
+      return route.loadData ? route.loadData(store) : null;
+    })
+    .map((promise) => {
+      if (promise) {
+        //individually wrap promises in promise, so it doesn't fail later in Promise.all(that expects it's all going to resolve)
+        return new Promise((resolve, reject) => {
+          //we resolve no matter what
+          promise.then(resolve).catch(resolve);
+        });
+      }
+    });
 
   //once all promises are resolved, we can render the application
   Promise.all(promises).then(() => {
+    //context to handle 404 page
+    const context = {};
     //passing req to receive url
-    res.send(renderer(req, store));
+    const content = renderer(req, store, context);
+
+    if (context.url) {
+      //redirect on server if in url in the context object (<Redirect /> in requireAuth.js)
+      return res.redirect(301, context.url);
+    }
+
+    if (context.notFound) {
+      res.status(404);
+    }
+    res.send(content);
   });
 });
 

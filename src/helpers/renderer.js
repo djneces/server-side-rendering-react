@@ -7,13 +7,13 @@ import { renderRoutes } from 'react-router-config';
 import serialize from 'serialize-javascript';
 import Routes from '../client/Routes';
 
-export default (req, store) => {
+export default (req, store, context) => {
   //generate content - turn components into HTML
   //JSX on the server - run webpack, then run the bundle.js
   const content = renderToString(
     <Provider store={store}>
       {/* context prop needed, {}, we need location (it's on the server, it can't read the url bar) */}
-      <StaticRouter location={req.path} context={{}}>
+      <StaticRouter location={req.path} context={context}>
         {/* Routes now is an array (we use react router config) */}
         <div>{renderRoutes(Routes)}</div>
       </StaticRouter>
