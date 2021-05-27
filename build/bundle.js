@@ -438,6 +438,8 @@ var _reactRedux = __webpack_require__(3);
 
 var _actions = __webpack_require__(4);
 
+var _reactHelmet = __webpack_require__(28);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -472,11 +474,29 @@ var UsersList = exports.UsersList = function (_Component) {
       });
     }
   }, {
+    key: 'head',
+    value: function head() {
+      return (
+        //SEO meta tags
+        _react2.default.createElement(
+          _reactHelmet.Helmet,
+          null,
+          _react2.default.createElement(
+            'title',
+            null,
+            this.props.users.length + ' Users Loaded'
+          ),
+          _react2.default.createElement('meta', { property: 'og:title', content: 'Users App' })
+        )
+      );
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
         null,
+        this.head(),
         'List of users',
         _react2.default.createElement(
           'ul',
@@ -541,12 +561,15 @@ var _serializeJavascript = __webpack_require__(15);
 
 var _serializeJavascript2 = _interopRequireDefault(_serializeJavascript);
 
+var _reactHelmet = __webpack_require__(28);
+
 var _Routes = __webpack_require__(2);
 
 var _Routes2 = _interopRequireDefault(_Routes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//router for server side
 exports.default = function (req, store, context) {
   //generate content - turn components into HTML
   //JSX on the server - run webpack, then run the bundle.js
@@ -564,13 +587,15 @@ exports.default = function (req, store, context) {
     )
   ));
 
+  var helmet = _reactHelmet.Helmet.renderStatic();
+
   /*tell the browser to download the public bundle.js*/
   //no white space, or we get warning in the browser
   //we have to pass the store data from the server to the client (as initial state)
   //serialize protects against malicious xss attacks - this is vulnerable part, react protects, but only what renders
-  return '<html><head><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"></head><body><div id="root">' + content + '</div><script>window.INITIAL_STATE = ' + (0, _serializeJavascript2.default)(store.getState()) + '</script><script src="bundle.js"></script></body></html>';
+  //helmet.title => title in the tab
+  return '<html><head>' + helmet.title.toString() + helmet.meta.toString() + '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"></head><body><div id="root">' + content + '</div><script>window.INITIAL_STATE = ' + (0, _serializeJavascript2.default)(store.getState()) + '</script><script src="bundle.js"></script></body></html>';
 };
-//router for server side
 
 /***/ }),
 /* 13 */
@@ -1073,6 +1098,12 @@ exports.default = function (ChildComponent) {
   //important return
   return (0, _reactRedux.connect)(mapStateToProps)(RequireAuth);
 };
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+module.exports = require("react-helmet");
 
 /***/ })
 /******/ ]);

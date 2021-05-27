@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchUsers } from '../actions';
+import { Helmet } from 'react-helmet';
 
 export class UsersList extends Component {
   componentDidMount() {
@@ -12,9 +13,22 @@ export class UsersList extends Component {
       return <li key={user.id}>{user.name}</li>;
     });
   }
+
+  head() {
+    return (
+      //SEO meta tags
+      <Helmet>
+        {/* title of the page  */}
+        <title>{`${this.props.users.length} Users Loaded`}</title>
+        <meta property='og:title' content='Users App' />
+      </Helmet>
+    );
+  }
+
   render() {
     return (
       <div>
+        {this.head()}
         List of users
         <ul>{this.renderUsers()}</ul>
       </div>
